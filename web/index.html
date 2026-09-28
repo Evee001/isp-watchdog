@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ISP Watchdog: are you getting the speed you pay for?</title>
+  <meta name="description" content="Test your internet speed in the browser, compare it with the plan you pay for, and call out your provider in one click.">
+  <meta name="theme-color" content="#0b1220">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ISP Watchdog">
+  <meta property="og:description" content="Test your internet speed, compare it with the plan you pay for, and call out your provider in one click.">
+  <meta property="og:image" content="/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="/">
+        <img src="/favicon.svg" alt="" width="32" height="32">
+        <span>ISP Watchdog</span>
+      </a>
+      <p class="tag">Are you getting the speed you pay for?</p>
+    </header>
+
+    <main>
+      <section class="card test" aria-labelledby="test-h">
+        <h1 id="test-h" class="sr-only">Speed test</h1>
+
+        <div class="gauge-box">
+          <svg class="gauge" viewBox="0 0 300 262" role="img" aria-labelledby="gauge-label">
+            <title id="gauge-label">Live speed gauge</title>
+            <path class="g-track" d="M 65.1 234.9 A 120 120 0 1 1 234.9 234.9" pathLength="100"/>
+            <path class="g-fill" id="gauge-fill" d="M 65.1 234.9 A 120 120 0 1 1 234.9 234.9" pathLength="100"/>
+            <g id="gauge-ticks" class="g-ticks"></g>
+          </svg>
+          <div class="gauge-read">
+            <div class="g-phase" id="phase">Ready</div>
+            <div class="g-value"><span id="live-value">0</span><small>Mbps</small></div>
+            <div class="g-progress" aria-hidden="true"><i id="phase-bar"></i></div>
+          </div>
+        </div>
+
+        <button class="go" id="go" type="button">
+          <span class="go-label">Start test</span>
+        </button>
+
+        <div class="stats">
+          <div class="stat">
+            <span class="k">Ping</span>
+            <span class="v"><b id="s-ping">–</b><small>ms</small></span>
+            <span class="sub">jitter <b id="s-jitter">–</b> ms</span>
+          </div>
+          <div class="stat down">
+            <span class="k">Download</span>
+            <span class="v"><b id="s-down">–</b><small>Mbps</small></span>
+            <span class="sub" id="s-down-pct">&nbsp;</span>
+          </div>
+          <div class="stat up">
+            <span class="k">Upload</span>
+            <span class="v"><b id="s-up">–</b><small>Mbps</small></span>
+            <span class="sub" id="s-up-pct">&nbsp;</span>
+          </div>
+        </div>
+
+        <p class="conn" id="conn">Detecting your network…</p>
+        <p class="error" id="error" role="alert" hidden></p>
+      </section>
+
+      <section class="card verdict" id="verdict" aria-live="polite" hidden>
+        <div class="verdict-head">
+          <span class="badge" id="v-badge"></span>
+          <h2 id="v-title"></h2>
+        </div>
+        <div class="bars">
+          <div class="bar-row">
+            <span>Download</span>
+            <div class="bar"><i id="b-down"></i><em class="mark" id="m-down"></em></div>
+            <span class="pct" id="p-down"></span>
+          </div>
+          <div class="bar-row">
+            <span>Upload</span>
+            <div class="bar"><i id="b-up"></i><em class="mark" id="m-up"></em></div>
+            <span class="pct" id="p-up"></span>
+          </div>
+        </div>
+        <label class="field">
+          <span>Your post <small>(edit it if you like)</small></span>
+          <textarea id="complaint" rows="4" maxlength="280"></textarea>
+          <small class="count"><span id="count">0</span>/280</small>
+        </label>
+        <div class="actions">
+          <a class="btn primary" id="post-x" href="#" target="_blank" rel="noopener noreferrer">Post on X</a>
+          <button class="btn" id="copy" type="button">Copy text</button>
+          <button class="btn" id="share" type="button" hidden>Share…</button>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="card plan" aria-labelledby="plan-h">
+          <h2 id="plan-h">Your plan</h2>
+          <p class="hint">What your provider promised. Saved on this device only.</p>
+          <form id="plan-form" autocomplete="off">
+            <div class="two">
+              <label class="field"><span>Download (Mbps)</span>
+                <input id="promised-down" type="number" min="1" max="10000" step="any" inputmode="decimal" value="50" required></label>
+              <label class="field"><span>Upload (Mbps)</span>
+                <input id="promised-up" type="number" min="0.1" max="10000" step="any" inputmode="decimal" value="10" required></label>
+            </div>
+            <label class="field"><span>Provider's X handle</span>
+              <input id="isp-handle" type="text" maxlength="30" placeholder="@YourISP" spellcheck="false"></label>
+            <label class="field"><span>Complain below <b id="tol-out">80%</b> of the plan</span>
+              <input id="tolerance" type="range" min="50" max="100" step="5" value="80"></label>
+          </form>
+        </section>
+
+        <section class="card history" aria-labelledby="hist-h">
+          <div class="hist-head">
+            <h2 id="hist-h">History</h2>
+            <div class="hist-actions">
+              <button class="btn small" id="export" type="button">Export CSV</button>
+              <button class="btn small ghost" id="clear" type="button">Clear</button>
+            </div>
+          </div>
+          <svg class="spark" id="spark" viewBox="0 0 320 90" role="img" aria-label="Download speed over your last tests"></svg>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>When</th><th>Down</th><th>Up</th><th>Ping</th><th></th></tr></thead>
+              <tbody id="hist-body"><tr class="empty"><td colspan="5">Run a test to start your history.</td></tr></tbody>
+            </table>
+          </div>
+          <p class="confirm" id="confirm-clear" hidden>
+            Delete all saved results?
+            <button class="btn small danger" id="clear-yes" type="button">Delete</button>
+            <button class="btn small ghost" id="clear-no" type="button">Keep</button>
+          </p>
+        </section>
+      </div>
+
+      <section class="card how" aria-labelledby="how-h">
+        <h2 id="how-h">How it works</h2>
+        <ol>
+          <li><b>Latency:</b> 20 tiny requests measure ping and jitter.</li>
+          <li><b>Download &amp; upload:</b> parallel streams run for about 8 seconds each against Cloudflare's global speed test network, with a fallback on this site's own edge servers.</li>
+          <li><b>Verdict:</b> results are compared with your plan and a ready-to-post message is drafted for your provider.</li>
+        </ol>
+        <p class="privacy">Privacy: no accounts, no tracking, no server-side storage. Your results and plan stay in your browser. Strict security headers (CSP, HSTS) are enforced on every page.</p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>Built by Oladeji Victor Enoch · also available as a <a id="repo-link" href="https://github.com/" target="_blank" rel="noopener noreferrer">Python automation bot</a></p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+selenium>=4.20
+python-dotenv>=1.0
+# Optional, only for --post api
+# tweepy>=4.14
