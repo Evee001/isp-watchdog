@@ -91,7 +91,8 @@
     gaugeFill.style.strokeDasharray = `${gaugePct(value)} 200`;
     gaugeFill.classList.toggle('on', value > 0);
     gaugeFill.classList.toggle('up', kind === 'up');
-    $('live-value').textContent = fmt(value) === '–' ? '0' : fmt(value);
+    $('live-value').textContent = value > 0 ? fmt(value) : '0';
+    $('live-unit').textContent = 'Mbps';
   }
 
   function setPhase(label, progress = 0) {
@@ -146,8 +147,8 @@
     const tick = setInterval(() => {
       const t = now();
       samples.push({ t, bytes: counter.bytes });
-      // live speed over the last ~1.5 s
-      const ref = samples.find((s) => s.t >= t - 1500) || samples[0];
+      // live speed over the last ~3 s (smooths out bursty upload completions)
+      const ref = samples.find((s) => s.t >= t - 3000) || samples[0];
       const live = mbps(counter.bytes - ref.bytes, t - ref.t);
       onProgress(Math.min(1, (t - start) / PHASE_MS), live || mbps(counter.bytes, t - start));
     }, 150);
@@ -423,9 +424,11 @@
       loadMeta(server).then(showMeta);
 
       setPhase('Ping', 0);
+      $('live-unit').textContent = 'ms';
       const lat = await measureLatency(server, (p, dt) => {
         setPhase('Ping', p);
         $('live-value').textContent = Math.round(dt);
+        $('live-unit').textContent = 'ms';
       });
       $('s-ping').textContent = Math.round(lat.ping);
       $('s-jitter').textContent = lat.jitter.toFixed(1);
@@ -475,7 +478,10 @@
     const parts = [];
     if (meta.asOrganization) parts.push(`Network: ${meta.asOrganization}`);
     if (where) parts.push(`Location: ${where}`);
-    if (meta.colo) parts.push(`Test server: ${meta.colo}`);
+    const colo = meta.colo && typeof meta.colo === 'object'
+      ? [meta.colo.city, meta.colo.iata && `(${meta.colo.iata})`].filter(Boolean).join(' ')
+      : meta.colo;
+    if (colo) parts.push(`Test server: ${colo}`);
     conn.textContent = parts.join('  ·  ') || 'Connected';
   }
 

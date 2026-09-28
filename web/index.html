@@ -9,7 +9,8 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="ISP Watchdog">
   <meta property="og:description" content="Test your internet speed, compare it with the plan you pay for, and call out your provider in one click.">
-  <meta property="og:image" content="/og.png">
+  <meta property="og:image" content="https://isp-watchdog.vercel.app/og.png">
+  <meta property="og:url" content="https://isp-watchdog.vercel.app/">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
@@ -38,7 +39,7 @@
           </svg>
           <div class="gauge-read">
             <div class="g-phase" id="phase">Ready</div>
-            <div class="g-value"><span id="live-value">0</span><small>Mbps</small></div>
+            <div class="g-value"><span id="live-value">0</span><small id="live-unit">Mbps</small></div>
             <div class="g-progress" aria-hidden="true"><i id="phase-bar"></i></div>
           </div>
         </div>
