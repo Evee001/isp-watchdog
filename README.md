@@ -10,7 +10,7 @@ ISP Watchdog measures your real connection speed, compares it with the plan your
 | Measures with | Cloudflare's speed test network (fallback: own edge functions) | speedtest.net, driven by Selenium |
 | Output | Live gauge, verdict vs. plan, one-click post on X, history chart, CSV export | Console report, `speed_history.csv`, X post via browser or API |
 
-**Live demo:** https://isp-watchdog.vercel.app
+**Live demo:** https://isp-watchdog.vercel.app · **Code:** https://github.com/Evee001/isp-watchdog
 
 ![ISP Watchdog web app](docs/screenshot.png)
 
